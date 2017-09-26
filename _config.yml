@@ -7,16 +7,16 @@ highlighter: rouge
 markdown: kramdown
 disqus: woongsik2
 google_analytics: ""
-title: 타자치는 개발자.
+title: 타자치는 개발자
 
 defaults:
   -
     scope:
       path: "" # empty string for all files
     values:
-      title: woongsik
+      title: 타자치는 개발자
 
-description: 타자치는 개발자.
+description: 타자치는 개발자
 author:
   name: woongsik
   email: 
@@ -24,7 +24,7 @@ author:
   twitter: 
   pinterest: 
   linkedin: 
-  bio: 타자치는 개발자.
+  bio: Front-End
   email_md5: #726351295ec82e145928582f595aa3aa
 
 rss_path: feed.xml

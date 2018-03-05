@@ -1,3 +1,14 @@
+---
+layout: post
+title: (javascript) const, let
+categories: [javascript, const, let]
+tags: [javascript, const, let]
+#fullview: true
+description: 자바스크립트 const, let.
+comments: true
+published: true
+---
+
 const, let
 ===
 

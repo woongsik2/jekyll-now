@@ -1,3 +1,14 @@
+---
+layout: post
+title: (javascript) Execution Context.
+categories: [javascript, Execution Context]
+tags: [javascript, Execution Context]
+#fullview: true
+description: 자바스크립트 Execution Context.
+comments: true
+published: true
+---
+
 실행 컨텍스트(Execution Context)
 ===
 

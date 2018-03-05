@@ -7,16 +7,16 @@ highlighter: rouge
 markdown: kramdown
 disqus: woongsik2
 google_analytics: ""
-title: 타자치는 개발자
+title: 타자치는 곰
 
 defaults:
   -
     scope:
       path: "" # empty string for all files
     values:
-      title: 타자치는 개발자
+      title: 타자치는 곰
 
-description: 타자치는 개발자
+description: 타자치는 곰
 author:
   name: woongsik
   email: 

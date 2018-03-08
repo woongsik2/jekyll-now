@@ -241,7 +241,7 @@ export default App;
 
 > 컴포넌트를 추가 한 후, 정상적으로 화면이 정상적으로 렌더링 되는것을 확인한다.
 
-### 스탭샷 테스팅
+### 스냅샷 테스팅
 > 컴포넌트를 렌더링하고, 그 결과물을 파일로 저장한다. 그리고, 다음번에 테스팅을 진행하게 되었을때, 이전의 결과물과 일치하는지를 확인한다.<br/>
 초기 렌더링 결과를 비교 할 수 있지만, 컴포넌트 내부 메소드를 호출시키고, 다시 렌더링 시켜서 그 결과물도 스냅샷을 저장시켜서, 각 상황을 이전에 렌더링 했던 결과와 일치하는지를 비교 할 수 있다.
 <br/>
@@ -315,6 +315,13 @@ exports[`Counter View 스냅샷 일치함.1 1`] = `
 
 * 작성했던 코드의 내용을 변경 한 후 테스트 결과이다.
 ```javascript
+ FAIL  src\components\Counter.test.js
+  ● Counter View › 스냅샷 일치함.
+
+    expect(value).toMatchSnapshot()
+
+    Received value does not match stored snapshot 1.
+
     - Snapshot
     + Received
 
@@ -322,7 +329,7 @@ exports[`Counter View 스냅샷 일치함.1 1`] = `
      <div>
        <h1>
     -    Counter
-    +    카운터를 세보자.
+    +    카운터
        </h1>
        <h2>
          1
@@ -341,10 +348,141 @@ Snapshot Summary
 Test Suites: 1 failed, 1 passed, 2 total
 Tests:       1 failed, 2 passed, 3 total
 Snapshots:   1 failed, 1 total
-Time:        1.597s
+Time:        0.437s, estimated 2s
+Ran all test suites.
+```
+
+> 기존의 스냅샷과 비교한 결과 다른점이 발견되어 테스트 실패한것을 볼 수 있다.<br/> 위 상태에서 엔터를 누르면 다시 테스트를 진행하며, `U`키를 누르면 변경된 스냅샷으로 업데이트 할 수 있다. 단점은, 스냅샷을 업데이트 하는데에 제약이 없기 때문에 오류이지만 업데이트를 해 버린다면, 다음 테스트에는 오류난 시점이 정상으로 되버릴 것이다.
+
+### 메소드 호출 및 state 조회
+* react-test-render는 실제로 컴포넌트가 렌더링 되기때문에, 컴포넌트의 `state`와 `메소드`에도 접근이 가능하다.<br/>
+`메소드`를 실행해 `state`를 업데이트 시켜보고, 의도한대로 렌더링이 되는지 확인해 보자.
+
+```javascript
+it('카운트 UP이 정상적으로 됨.', () => {
+        component.getInstance().onPlus();
+        expect(component.getInstance().state.number).toBe(2);
+        const snap = component.toJSON();
+        expect(snap).toMatchSnapshot();
+    });
+
+    it('카운드 DOWN이 정상적으로 됨.', () => {
+        component.getInstance().onMinus();
+        expect(component.getInstance().state.number).toBe(1);
+        const snap = component.toJSON();
+        expect(snap).toMatchSnapshot();
+    });
+
+ PASS  src\components\Counter.test.jsx
+  Counter View
+    √ 초기 렌더링이 정상적으로 됨. (3ms)
+    √ 스냅샷 일치함. (2ms)
+    √ 카운트 UP이 정상적으로 됨. (3ms)
+    √ 카운드 DOWN이 정상적으로 됨. (3ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   3 passed, 3 total
+Time:        0.104s, estimated 1s
 Ran all test suites.
 
 Watch Usage: Press w to show more.
 ```
 
-> 기존의 스냅샷과 비교한 결과 다른점이 발견되어 테스트 실패한것을 볼 수 있다.<br/> 위 상태에서 엔터를 누르면 다시 테스트를 진행하며, `U`키를 누르면 변경된 스냅샷으로 업데이트 할 수 있다. 단점은, 스냅샷을 업데이트 하는데에 제약이 없기 때문에 오류이지만 업데이트를 해 버린다면, 다음 테스트에는 오류난 시점이 정상으로 되버릴 것이다.
+> 위 테스트 결과로 state가 변하는것을 스냅샷을 통한 테스트를 통해 확인 가능하다.<br/>
+아까 작성했던 `NameForm`, `NameList`에도 초기 렌더링 테스트 코드를 작성 한다.
+
+* src/component/NameList.test.jsx
+```javascript
+import React from 'react';
+import renderer from 'react-test-renderer';
+import NameList from './NameList.jsx';
+
+describe('NameList View', () => {
+    let component = null;
+
+    it('NameList View 초기 렌더링', () =>{
+        component = renderer.create(<NameList names={['웅식', '킴웅식']} />);
+    });
+    
+    it('NameList View Snapshot check', () =>{
+        const snap = component.toJSON();
+        expect(snap).toMatchSnapshot();
+    });
+});
+```
+
+* src/componemt/NameForm.test.jsx
+```javascript
+import React from 'react';
+import renderer from 'react-test-renderer';
+import NameForm from './NameForm.jsx';
+
+describe('NameForm View', () => {
+    let component = null;
+
+    it('NameForm View 초기 렌더링', () =>{
+        component = renderer.create(<NameForm />);
+    });
+    
+    it('NameForm View Snapshot check', () =>{
+        const snap = component.toJSON();
+        expect(snap).toMatchSnapshot();
+    });
+});
+```
+
+* src/App.test.js
+```javascript
+import React from 'react';
+import renderer from 'react-test-renderer';
+import App from './App';
+
+describe('App View', () => {
+  let component = null;
+
+  it('App View 초기 렌더링', () =>{
+    component = renderer.create(<App />);
+  });
+
+  it('App View Snapshot check', () =>{
+    const snap = component.toJSON();
+    expect(snap).toMatchSnapshot();
+  });
+});
+```
+
+> 테스트를 진행하면서, 불필요하지만 테스트 코드는 그대로 유지하고 싶은경우에는 `skip`을 이용하면 된다.
+
+```javascript
+describe('App View', () => {
+  let component = null;
+
+  it('App View 초기 렌더링', () =>{
+    component = renderer.create(<App />);
+  });
+
+  it.skip('App View Snapshot check', () =>{
+    const snap = component.toJSON();
+    expect(snap).toMatchSnapshot();
+  });
+
+});
+
+ PASS  src\App.test.js
+  App View
+    √ App View 초기 렌더링 (3ms)
+    ○ skipped 1 test
+
+Test Suites: 1 passed, 1 total
+Tests:       1 skipped, 1 passed, 2 total
+Snapshots:   0 total
+Time:        0.086s, estimated 1s
+
+Watch Usage: Press w to show more.
+```
+
+### Enzyme
+>Enzyme를 이용하면 세밀한 리엑트 컴포넌트 테스팅을 할 수 있다.<br/>
+Enzyme를 이용해 DOM 이벤트를 시뮬레이트(Button 클릭, Input 수정 등) 할 수 있고, 라이프사이클이 문제없이 정상적으로 진행되는지 확인 할 수 있다.<br/>
+npm 모듈 `enzyme`와 `enzyme-adapter-react-16`을 설치 한다.<br/>

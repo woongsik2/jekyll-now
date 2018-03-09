@@ -6,7 +6,7 @@ tags: [javascript, React, Jest, Enzyme, Test, npm]
 #fullview: true
 description: Jest, Enzyme을 이용한 React Component Testing.
 comments: true
-published: false
+published: true
 ---
 
 Jest, Enzyme React Component Testing.
@@ -76,8 +76,7 @@ Watch Usage
 > 정상적으로 완료되는것을 확인 할 수 있다.
 
 ### 카운터 컴포넌트
-> 단순한 카운터 프로그램을 만들어 보자.<br/>
-+ 버튼과 - 버튼을 이용해 state에 있는 값을 변경하는 컴포넌트이다.
+\+ 버튼과 - 버튼을 이용해 state에 있는 값을 변경하는 컴포넌트이다.
 
 * src/components/Counter.jsx
 ```javascript
@@ -486,3 +485,183 @@ Watch Usage: Press w to show more.
 >Enzyme를 이용하면 세밀한 리엑트 컴포넌트 테스팅을 할 수 있다.<br/>
 Enzyme를 이용해 DOM 이벤트를 시뮬레이트(Button 클릭, Input 수정 등) 할 수 있고, 라이프사이클이 문제없이 정상적으로 진행되는지 확인 할 수 있다.<br/>
 npm 모듈 `enzyme`와 `enzyme-adapter-react-16`을 설치 한다.<br/>
+설치 후 `src` 디렉토리 밑에 `setupTests.js`파일을 생성 하고 아래 코드를 추가한다.(`create-react-app`로 프로젝트를 생성한 경우 사용할 수 있는 테스트 설정이다.)
+
+* `Enzyme`의 `adapter`를 적용하는 `configure`를 제외한 대표 세가지 메소드가 있다.
+  * shallow : 간단한 컴포넌트를 메모리에 렌더링 한다. 단일 컴포넌트 테스트시 유용하다.
+  * mount : `HOC`나 자식 컴포넌트까지 모두 렌더링 한다. 다른 컴포넌트와의 관계를 테스트할때 유용하다.(`HOC : Higher-Order Components - 자바스크립트의 Function을 리턴하는대신 Component를 리턴 하는것.`)
+  * render : 컴포넌트를 정적인 html로 렌더링 한다. 컴포넌트가 브라우저에서 어떻게 되는지 테스트할때 유용하다.
+
+
+* src/setupTest.js
+
+> 아래 코드를 작성하고, 재실행 한다.
+
+```javascript
+import {configure} from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+configure({adapter: new Adapter()});
+```
+
+> 기존의 `Counter` 테스트 코드에 작성했던 `react-test-renderer`를 `Enzyme`으로 변경 한다.
+```javascript
+import React from 'react';
+import Counter from './Counter.jsx';
+import {shallow, configure} from 'enzyme';
+
+describe('Counter View', () => {  
+    let component = null;
+
+    it("Counter View 초기 렌더링이 정상적으로 됨.", () => {
+        component = shallow(<Counter />);
+    });
+
+    it('Counter View Snapshot check', () => {
+        expect(component).toMatchSnapshot();
+    });
+
+    it('카운트 UP이 정상적으로 됨.', () => {
+        component.find('#plus').simulate('click');
+        expect(component.state().number).toBe(2);
+        expect(component).toMatchSnapshot();
+    });
+
+    it('카운드 DOWN이 정상적으로 됨.', () => {
+        component.find('#minus').simulate('click');
+        expect(component.state().number).toBe(1);
+        expect(component).toMatchSnapshot();
+    });
+});
+```
+
+> 코드를 수정하고, 테스트를 진행 후 스냅샷을 업데이트 한 후 스냅샷을 확인 해 보자. `Enzyme`를 사용한 스냅샷의 결과물은 가독성이 `react-test-renderer`보다 좋지 않은것을 볼 수 있다.
+
+```javascript
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Counter View Counter View Snapshot check 1`] = `
+ShallowWrapper {
+  "length": 1,
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Counter />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h1>
+          Counter
+</h1>,
+...
+```
+
+> `package.json`에 설치한 `enzyme-to-json`을 적용하면 `react-test-renderer`과 같이 깔끔하게 스냅샷 결과물을 얻을 수 있다.
+
+```javascript
+"jest": {
+    "snapshotSerializers": ["enzyme-to-json/serializer"]
+}
+```
+
+> 위 설정을 추가하고 테스트를 재 실행후 스냅샷을 업데이트 하고, 결과를 확인 해 보자. 설정을 추가하기 전과 확연히 다른것을 볼 수 있다.
+
+```javascript
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Counter View Counter View Snapshot check 1`] = `
+<div>
+  <h1>
+    Counter
+  </h1>
+  <h2>
+    1
+  </h2>
+  <button
+    id="plus"
+    onClick={[Function]}
+  >
+     + 
+  </button>
+  <button
+    id="minus"
+    onClick={[Function]}
+  >
+```
+
+### DOM 시뮬레이션
+> 기존에는 테스트 할 수 없었던, DOM 이벤트 시뮬레이트를 할 수 있다.<br/>
+화면에 `h1`과 `button`이 있는지 확인 하는 코드를 작성해보자.
+
+* src/components/Counter.test.jsx
+```javascript
+describe('DOM 확인', () => {
+    it('h1 여부 확인', () => {
+        expect(component.find('h1').exists()).toBe(true);
+    });
+
+    it('button 여부 확인', () => {
+        expect(component.find('button').exists()).toBe(true);
+    });
+});
+```
+> 렌더링을 하고난 뒤 `selector`를 통해 특정 DOM을 선택 할 수 있다.<br/>
+선택할 수 있는 항목은 `css, props value, component, tag name`이다.
+
+* src/components/Counter.test.jsx
+```javascript
+describe('Counter View 이벤트 시뮬레이트', () => {
+    it('number 초기값 변경', () => {
+        component.setState({number:3});
+        expect(component.state().number).toBe(3);
+    });
+});
+```
+> `Counter.jsx`의 `number`값을 `3`으로 초기화 하고 확인시 정상적으로 PASS된다.
+
+* src/components/NameForm.test.jsx
+> `NameForm`의 `input`에 값을 넣고 추가되는것에 대한 테스트이다.
+```javascript
+describe('NameForm View', () => {
+    let component = null;
+    let changed = null;
+    const onInsert = (name) => {
+        changed = name;
+    }
+
+    it('NameForm View 초기 렌더링', () =>{
+        component = shallow(<NameForm onInsert={onInsert}/>);
+    });
+
+    it('input 값 변경', () => {
+        const changeInputValue = {
+            target: {
+                value: 'Gom'
+            }
+        };
+        component.find('input').simulate('change', changeInputValue);
+        expect(component.state().name).toBe('Gom');
+    });
+
+    it('submit 실행', () => {
+        const changeInputValueSubmit = {
+            preventDefault: () => null
+        };
+        component.find('form').simulate('submit', changeInputValueSubmit);
+        expect(component.state().name).toBe('');
+        expect(changed).toBe('Gom');
+    });
+});
+```
+> `input`의 값을 변경하고, `submit`까지 정상적으로 PASS된다.<br/>`Enzyme`의 여러가지 기능으로 테스트를 진행 할 수 있다.
+
+> 참고 사이트 : [Jest](https://facebook.github.io/jest/docs/en/expect.html),
+[Enzyme](http://airbnb.io/enzyme/docs/api/shallow.html)

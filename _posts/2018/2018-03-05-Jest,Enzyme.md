@@ -45,7 +45,8 @@ Jest, Enzyme React Component Testing.
 > npm `create-react-app` 을 이용해서 프로젝트를 생성한다.
 `create-react-app`에는 기본적인 테스트 환경이 구성 되어있으며, 기본 테스트 파일도 존재 한다.(App.test.js)
 
-* `src/App.test.js
+* src/App.test.js
+
 ```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -57,6 +58,7 @@ it('renders without crashing', () => {
   ReactDOM.unmountComponentAtNode(div);
 });
 ```
+
 > 컴포넌트가 크래쉬 없이 정상적으로 렌더링 되는지를 확인 해 준다.<br/>
 실행하기 위해서는 터미널로 프로젝트의 경로에서 `npm test`를 입력하면 된다.
 
@@ -79,6 +81,7 @@ Watch Usage
 \+ 버튼과 - 버튼을 이용해 state에 있는 값을 변경하는 컴포넌트이다.
 
 * src/components/Counter.jsx
+
 ```javascript
 import React, { Component } from 'react';
 
@@ -112,6 +115,7 @@ export default Counter;
 > 위 컴포넌트를 App에서 렌더링 하자.
 
 * src/App.js
+
 ```javascript
 import React, { Component } from 'react';
 import Counter from './components/Counter.jsx';
@@ -135,6 +139,7 @@ export default App;
 input의 상태값은 `NameForm`에 넣고, `NameList`에 보여줄 이름 목록의 상태값은 `App`에서 `NameList`로 `props`를 통해 전달 하도록 한다.
 
 * src/components/NameForm.jsx
+
 ```javascript
 import React, { Component } from 'react';
 
@@ -178,6 +183,7 @@ export default NameForm;
 ```
 
 * src/components/NameList.jsx
+
 ```javascript
 import React, { Component } from 'react';
 
@@ -207,6 +213,7 @@ export default NameList;
 > 위 새로 만든 컴포넌트를 `App`에서 렌더링 한다. 컴포넌트를 추가하면서 `App`에 `state`값과 `onInsert` 메소드를 추가 한다.
 
 * src/App.js
+
 ```javascript
 import React, { Component } from 'react';
 import Counter from './components/Counter.jsx';
@@ -248,6 +255,7 @@ export default App;
 설치 후 테스트 코드를 작성 한다.
 
 * src/components/Counter.test.js
+
 ```javascript
 import React from 'react';
 import renderer from 'react-test-renderer';
@@ -282,6 +290,7 @@ describe('Counter View', () => {
 * 테스트 코드를 작성/수정 후 저장을 하게되면, 자동으로 테스트가 진행되며, 스냅샷이 생성된다. 스냅샷은 렌더링하는 파일의 경로의 `__snapshots__` 디렉토리에 저장되며, 확장자는 `.snap`이다.
 
 * 테스트를 실행하고 생성된 스냅샷 파일을 열어보자.
+
 ```javascript
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
@@ -308,11 +317,13 @@ exports[`Counter View 스냅샷 일치함.1 1`] = `
 </div>
 `;
 ```
+
 > 렌더링 한 결과물이 스냅샷으로 저장된것을 확인 할 수 있고,<br/>
 작성했던 코드보다 간소화 되어있는 것을 볼 수 있다.<br/>
 화면을 변경 하고 테스트를 할 경우 어떤 변화가 있는지 확인 해 보자.
 
 * 작성했던 코드의 내용을 변경 한 후 테스트 결과이다.
+
 ```javascript
  FAIL  src\components\Counter.test.js
   ● Counter View › 스냅샷 일치함.
@@ -392,6 +403,7 @@ Watch Usage: Press w to show more.
 아까 작성했던 `NameForm`, `NameList`에도 초기 렌더링 테스트 코드를 작성 한다.
 
 * src/component/NameList.test.jsx
+
 ```javascript
 import React from 'react';
 import renderer from 'react-test-renderer';
@@ -412,6 +424,7 @@ describe('NameList View', () => {
 ```
 
 * src/componemt/NameForm.test.jsx
+
 ```javascript
 import React from 'react';
 import renderer from 'react-test-renderer';
@@ -432,6 +445,7 @@ describe('NameForm View', () => {
 ```
 
 * src/App.test.js
+
 ```javascript
 import React from 'react';
 import renderer from 'react-test-renderer';
@@ -505,6 +519,7 @@ configure({adapter: new Adapter()});
 ```
 
 > 기존의 `Counter` 테스트 코드에 작성했던 `react-test-renderer`를 `Enzyme`으로 변경 한다.
+
 ```javascript
 import React from 'react';
 import Counter from './Counter.jsx';
@@ -602,6 +617,7 @@ exports[`Counter View Counter View Snapshot check 1`] = `
 화면에 `h1`과 `button`이 있는지 확인 하는 코드를 작성해보자.
 
 * src/components/Counter.test.jsx
+
 ```javascript
 describe('DOM 확인', () => {
     it('h1 여부 확인', () => {
@@ -617,6 +633,7 @@ describe('DOM 확인', () => {
 선택할 수 있는 항목은 `css, props value, component, tag name`이다.
 
 * src/components/Counter.test.jsx
+
 ```javascript
 describe('Counter View 이벤트 시뮬레이트', () => {
     it('number 초기값 변경', () => {
@@ -629,6 +646,7 @@ describe('Counter View 이벤트 시뮬레이트', () => {
 
 * src/components/NameForm.test.jsx
 > `NameForm`의 `input`에 값을 넣고 추가되는것에 대한 테스트이다.
+
 ```javascript
 describe('NameForm View', () => {
     let component = null;
